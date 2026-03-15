@@ -202,6 +202,69 @@
   border-color: rgba(255, 255, 255, 0.18);
 }
 
+.orderBox {
+  margin-top: 28px;
+  padding: 18px;
+
+  border-radius: 18px;
+  background: var(--gradient);
+
+  border: 1px solid var(--border-light);
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  backdrop-filter: blur(10px);
+}
+
+.orderRow {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.walletBox {
+  margin-top: 10px;
+  padding: 10px;
+
+  border-radius: 10px;
+  background: var(--background-blur);
+  border: 1px solid var(--border-light);
+
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.orderActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.paid {
+  margin-top: 12px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.stockPill {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+
+  background: var(--background);
+  border: 1px solid var(--border-light);
+  color: rgba(var(--text-rgb), 0.9);
+
+  backdrop-filter: blur(6px);
+}
+
 @media (max-width: 980px) {
   .card {
     grid-column: span 6;

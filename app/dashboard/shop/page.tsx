@@ -1,4 +1,8 @@
+"use client";
+
 import styles from "../cart/cart.module.css";
+import { useCartStore } from "@/zustand/use-cart-store";
+import { useHasHydrated } from "@/hooks/use-has-hydrated";
 
 const shopItems = [
   {
@@ -31,11 +35,22 @@ const shopItems = [
 ] as const;
 
 export default function Shop() {
+  const hydrated = useHasHydrated();
+
+  const addItem = useCartStore((s) => s.addItem);
+  const totalItems = useCartStore((s) => s.totalItems());
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.cartHeader}>
-        <h1 className={styles.cartTitle}>Shop</h1>
-        <p className={styles.cartSubtitle}>NFT items • prices in Eternal</p>
+        <div>
+          <h1 className={styles.cartTitle}>Shop</h1>
+          <p className={styles.cartSubtitle}>NFT items • prices in Eternal</p>
+        </div>
+
+        <p className={styles.cartSubtitle}>
+          In cart: {hydrated ? totalItems : 0}
+        </p>
       </div>
 
       <div className={styles.cardsGrid}>
@@ -60,10 +75,20 @@ export default function Shop() {
               <p className={styles.cardSubtitle}>{p.subtitle}</p>
 
               <div className={styles.cardActions}>
-                <button className={styles.primaryBtn} type="button">
-                  Buy now
-                </button>
-                <button className={styles.secondaryBtn} type="button">
+                <button
+                  className={styles.secondaryBtn}
+                  type="button"
+                  onClick={() =>
+                    addItem({
+                      id: p.id,
+                      title: p.title,
+                      subtitle: p.subtitle,
+                      priceEternal: p.priceEternal,
+                      image: p.image,
+                      rarity: p.rarity,
+                    })
+                  }
+                >
                   Add to cart
                 </button>
               </div>

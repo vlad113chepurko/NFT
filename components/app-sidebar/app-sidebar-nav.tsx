@@ -14,11 +14,6 @@ function DashboardSidebarNavigation() {
       vector: <vectors.DashboardVector />,
     },
     {
-      href: "/dashboard/favorites",
-      label: "Favorites",
-      vector: <vectors.Favorites />,
-    },
-    {
       href: "/dashboard/cart",
       label: "Cart",
       vector: <vectors.Cart />,
