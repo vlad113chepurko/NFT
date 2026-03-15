@@ -51,6 +51,24 @@
   -ms-overflow-style: none;
 }
 
+.log_out {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  color: var(--red);
+  transition: all 0.3s ease-in-out;
+  background-color: var(--border-light);
+  svg {
+    stroke: var(--red);
+  }
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .dashboard-sidebar__nav::-webkit-scrollbar {
   display: none;
 }

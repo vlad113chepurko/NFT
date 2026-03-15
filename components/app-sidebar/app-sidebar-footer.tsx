@@ -1,13 +1,46 @@
 "use client";
-
+import { useRouter } from "next/navigation";
+import { Spinner } from "../ui/spinner";
+import { useState } from "react";
+import { vectors } from "@/vectors";
 export default function SideBarFooter() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  function handleLogout() {
+    try {
+      setLoading(true);
+      fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Logout failed");
+          }
+          router.push("/auth/login");
+        })
+        .catch((error) => {
+          console.error("Logout error:", error);
+        });
+    } catch (error) {
+      setLoading(false);
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="side-bar__footer">
-      <div aria-label="Інформація про користувача" className="side-bar__bottom">
-        <p>
-          <strong>Wallet:</strong> <span className="text-purple-400 font-black"> 0xA34f...9B21</span>
-        </p>
-      </div>
+      <button className="log_out" onClick={handleLogout} type="button">
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <vectors.Logout />
+            Вихід
+          </>
+        )}
+      </button>
     </div>
   );
 }

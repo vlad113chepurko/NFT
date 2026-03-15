@@ -1,32 +1,27 @@
 import type { AuthType } from "@/lib/zod/auth";
 import { useRouter } from "next/navigation";
+import supabase from "@/lib/supabase/client";
 
-interface LoginProps {
+interface SignProps {
   data: AuthType;
 }
 
-function useLogin(setIsLoading: (value: boolean) => void) {
+export default function useLogin(setIsLoading: (value: boolean) => void) {
   const router = useRouter();
-  const auth = async ({ data }: LoginProps) => {
+
+  const auth = async ({ data }: SignProps) => {
     try {
       setIsLoading(true);
 
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
 
-      if (!res.ok) {
-        throw new Error("Auth failed");
-      }
+      if (error) throw new Error(error.message);
 
       router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-      throw error;
+      return { ok: true };
     } finally {
       setIsLoading(false);
     }
@@ -34,5 +29,3 @@ function useLogin(setIsLoading: (value: boolean) => void) {
 
   return { auth };
 }
-
-export default useLogin;
