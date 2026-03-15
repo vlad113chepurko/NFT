@@ -1,8 +1,8 @@
 "use client";
-import { Spinner } from "@/components/ui/spinner";
+import useSign from "@/hooks/auth-hooks/use-auth";
 import { useLoadingStore } from "@/zustand/use-loading-store";
-import useLogin from "@/hooks/auth-hooks/use-login";
 import styles from "../auth.module.css";
+import { Spinner } from "@/components/ui/spinner";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
@@ -11,13 +11,13 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Auth } from "@/lib/zod/auth";
 import type { AuthType } from "@/lib/zod/auth";
-import Close from "@/vectors/Close";
 import Link from "next/link";
+import Close from "@/vectors/Close";
 
-export default function Login() {
-  const { isLoading, setIsLoading } = useLoadingStore();
-  const { auth } = useLogin(setIsLoading);
+export default function Signup() {
   const router = useRouter();
+  const { setIsLoading, isLoading } = useLoadingStore();
+  const { auth } = useSign(setIsLoading);
 
   const {
     register,
@@ -37,8 +37,7 @@ export default function Login() {
     <div className={styles.wrapper}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <div className="flex flex-row justify-between items-center w-full">
-          <h1>Login</h1>
-
+          <h1>Sign Up</h1>
           <button
             type="button"
             onClick={() => router.push("/")}
@@ -50,14 +49,11 @@ export default function Login() {
 
         <div className={styles.field}>
           <Label htmlFor="email">Enter e-mail</Label>
-
           <Input
             id="email"
-            type="email"
             placeholder="example@email.com"
             {...register("email")}
           />
-
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email.message}</p>
           )}
@@ -65,14 +61,12 @@ export default function Login() {
 
         <div className={styles.field}>
           <Label htmlFor="password">Enter password</Label>
-
           <Input
             id="password"
             type="password"
-            placeholder="*****"
+            placeholder="******"
             {...register("password")}
           />
-
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
@@ -84,12 +78,12 @@ export default function Login() {
               <Spinner className="size-5" />
             </>
           ) : (
-            <>Login</>
+            <>Sign Up</>
           )}
         </Button>
 
         <div className="flex flex-row w-full">
-          <Link href="/auth/signup">I don't have an account</Link>
+          <Link href="/auth/login">I already have an account</Link>
         </div>
       </form>
     </div>
