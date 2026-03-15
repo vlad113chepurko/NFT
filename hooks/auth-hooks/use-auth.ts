@@ -19,11 +19,13 @@ function useAuth(setIsLoading: (value: boolean) => void) {
         body: JSON.stringify(data),
       });
 
+      const payload = await res.json().catch(() => null);
+
       if (!res.ok) {
-        throw new Error("Auth failed");
+        throw new Error(payload?.error ?? `Auth failed (${res.status})`);
       }
 
-      router.push('/auth/login');
+      router.push("/auth/login");
     } catch (error) {
       console.error(error);
       throw error;

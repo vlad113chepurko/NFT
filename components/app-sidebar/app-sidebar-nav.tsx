@@ -1,66 +1,60 @@
 "use client";
 import Link from "next/link";
-import { Skeleton } from "../ui/skeleton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Skeleton from "../ui/skeleton";
+import { vectors } from "@/vectors";
 
 function DashboardSidebarNavigation() {
   const [isLoading, setIsLoading] = useState(true);
 
   const paths = [
     {
-      href: `/dashboard`,
-      hrefToCheck: "/dashboard",
-      label: "Панель керування",
+      href: "/dashboard",
+      label: "Dashboard",
+      vector: <vectors.DashboardVector />,
     },
     {
-      href: "/library",
-      hrefToCheck: "/library",
-      label: "Бібліотека",
+      href: "/dashboard/favorites",
+      label: "Favorites",
+      vector: <vectors.Favorites />,
     },
     {
-      href: "/notifications",
-      hrefToCheck: "/notifications",
-      label: "Повідомлення",
+      href: "/dashboard/cart",
+      label: "Cart",
+      vector: <vectors.Cart />,
     },
     {
-      href: "/metrics",
-      hrefToCheck: "/metrics",
-      label: "Метрики",
-    },
-    {
-      href: "/finances",
-      hrefToCheck: "/finances",
-      label: "Фінанси",
-    },
-    {
-      href: "/settings",
-      hrefToCheck: "/settings",
-      label: "Налаштування",
+      href: "/dashboard/shop",
+      label: "Shop",
+      vector: <vectors.Shop />,
     },
   ];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <nav className="side-bar__nav">
       <ul>
-        {isLoading ? (
-          <>
-            {paths.map((path) => (
-              <li key={path.href} className={`side-bar__li`}>
-                <Skeleton className="w-full h-10 rounded-[5px]" />
+        {isLoading
+          ? paths.map((path) => (
+              <li key={path.href} className="side-bar__li">
+                <Skeleton className="w-full h-[50px] rounded-[5px]" />
               </li>
-            ))}
-          </>
-        ) : (
-          <>
-            {paths.map((path) => (
-              <li key={path.href} className={`side-bar__li`}>
-                <Link href={path.href}>
+            ))
+          : paths.map((path) => (
+              <li key={path.href} className="side-bar__li">
+                <Link href={path.href} className="side-bar__link">
+                  {path.vector}
                   <span>{path.label}</span>
                 </Link>
               </li>
             ))}
-          </>
-        )}
       </ul>
     </nav>
   );

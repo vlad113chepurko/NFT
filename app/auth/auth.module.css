@@ -20,7 +20,6 @@
   transition: 0.1s all ease-in-out;
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -33,7 +32,7 @@
   width: 500px;
   padding: 20px;
   border-radius: 10px;
-  background-color: var(--foreground);
+  background-color: var(--text);
   color: var(--background);
 
   h1 {
@@ -42,9 +41,15 @@
   }
 
   a {
-    color: var(--primary);
+    color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 0.4rem;
+  }
+
+  button {
+    background-color: var(--background);
+    color: var(--text);
+    border-radius: 16px;
   }
 }
 
@@ -64,6 +69,15 @@
   input {
     font-size: 1rem;
     padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    inset: 0;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
   }
 
   label {
