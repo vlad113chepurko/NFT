@@ -28,6 +28,11 @@ function DashboardSidebarNavigation() {
       label: "Shop",
       vector: <vectors.Shop />,
     },
+    {
+      href: "/dashboard/deposit",
+      label: "Deposit",
+      vector: <vectors.Deposit />,
+    },
   ];
 
   useEffect(() => {

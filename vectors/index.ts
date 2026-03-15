@@ -4,8 +4,11 @@ import Favorites from "./Favorites";
 import Cart from "./Cart";
 import Shop from "./Shop";
 import Logout from "./Logout";
+import Deposit from "./Deposit";
+
 export const vectors = {
   Close,
+  Deposit,
   Logout,
   Cart,
   Favorites,
