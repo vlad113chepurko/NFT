@@ -2,25 +2,17 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { NFT } from "@/types/nft.types";
 
-export type ShopItem = {
-  id: string;
-  title: string;
-  subtitle: string;
-  priceEternal: number;
-  image: string;
-  rarity: string;
-};
-
-export type CartItem = ShopItem & {
+export type CartItem = NFT & {
   qty: number;
 };
 
 type CartState = {
   items: CartItem[];
-  addItem: (item: ShopItem, qty?: number) => void;
-  removeItem: (id: string) => void;
-  setQty: (id: string, qty: number) => void;
+  addItem: (item: NFT, qty?: number) => void;
+  removeItem: (id: number) => void;
+  setQty: (id: number, qty: number) => void;
   clear: () => void;
   totalEternal: () => number;
   totalItems: () => number;
@@ -45,10 +37,10 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      removeItem: (id) =>
+      removeItem: (id: number) =>
         set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
 
-      setQty: (id, qty) =>
+      setQty: (id: number, qty: number) =>
         set((state) => ({
           items: state.items
             .map((i) => (i.id === id ? { ...i, qty: Math.max(1, qty) } : i))
@@ -58,7 +50,7 @@ export const useCartStore = create<CartState>()(
       clear: () => set({ items: [] }),
 
       totalEternal: () =>
-        get().items.reduce((sum, i) => sum + i.priceEternal * i.qty, 0),
+        get().items.reduce((sum, i) => sum + i.price * i.qty, 0),
       totalItems: () => get().items.reduce((sum, i) => sum + i.qty, 0),
     }),
     {

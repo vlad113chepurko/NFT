@@ -109,9 +109,9 @@ export default function CheckoutPage() {
 
       const { data: deposits, error: depError } = await supabase
         .from("deposits")
-        .select("amount_sol, created_at")
+        .select("amount_sol, wallet_address, block_time, created_at")
         .eq("user_id", user.id)
-        .gte("created_at", order.created_at);
+        .eq("wallet_address", order.wallet_address);
 
       if (depError) {
         setError(depError.message);

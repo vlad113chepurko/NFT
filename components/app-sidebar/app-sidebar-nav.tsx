@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import Skeleton from "../ui/skeleton";
+import { Skeleton } from "../ui/skeleton";
 import { vectors } from "@/vectors";
 
 function DashboardSidebarNavigation() {
@@ -44,7 +44,7 @@ function DashboardSidebarNavigation() {
         {isLoading
           ? paths.map((path) => (
               <li key={path.href} className="side-bar__li">
-                <Skeleton className="w-full h-[50px] rounded-[5px]" />
+                <Skeleton className="w-full h-[50px] rounded-[5px] skeleton" />
               </li>
             ))
           : paths.map((path) => (

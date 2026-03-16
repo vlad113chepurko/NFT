@@ -1,100 +1,131 @@
 "use client";
 
-import styles from "../cart/cart.module.css";
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "motion/react";
+import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useCartStore } from "@/zustand/use-cart-store";
+import { useGetNfts } from "@/hooks/nfts/use-get-nfts";
 import { useHasHydrated } from "@/hooks/use-has-hydrated";
+import shopStyles from "./shop.module.css";
+import styles from "../cart/cart.module.css";
 
-const shopItems = [
-  {
-    id: "shop-001",
-    title: "Eternal Genesis",
-    subtitle: "Founder Edition",
-    priceEternal: 1250,
-    image: "https://picsum.photos/seed/eternal-genesis/640/420",
-    rarity: "Legendary",
-    stock: 12,
-  },
-  {
-    id: "shop-002",
-    title: "Void Runner",
-    subtitle: "Cyber Drift",
-    priceEternal: 420,
-    image: "https://picsum.photos/seed/void-runner/640/420",
-    rarity: "Epic",
-    stock: 48,
-  },
-  {
-    id: "shop-003",
-    title: "Crystal Bloom",
-    subtitle: "Nature Protocol",
-    priceEternal: 95,
-    image: "https://picsum.photos/seed/crystal-bloom/640/420",
-    rarity: "Rare",
-    stock: 203,
-  },
-] as const;
+const SKELETON_COUNT = 8;
 
 export default function Shop() {
+  const [hoverId, setHoverId] = useState<number | null>(null);
+
+  const [loaded, setLoaded] = useState<Record<number, boolean>>({});
+
+  const { data = [], isLoading, error } = useGetNfts();
   const hydrated = useHasHydrated();
 
   const addItem = useCartStore((s) => s.addItem);
   const totalItems = useCartStore((s) => s.totalItems());
 
+  useMemo(() => {
+    const ids = new Set(data.map((x) => x.id));
+    setLoaded((prev) => {
+      const next: Record<number, boolean> = {};
+      for (const k of Object.keys(prev)) {
+        const id = Number(k);
+        if (ids.has(id)) next[id] = prev[id];
+      }
+      return next;
+    });
+  }, [data.length]);
+
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.cartHeader}>
         <div>
-          <h1 className={styles.cartTitle}>Shop</h1>
-          <p className={styles.cartSubtitle}>NFT items • prices in Eternal</p>
+          <h1 className={styles.cartTitle}>NFT Shop</h1>
+          <p className={styles.cartSubtitle}>NFT items - prices in SOL</p>
         </div>
-
         <p className={styles.cartSubtitle}>
           In cart: {hydrated ? totalItems : 0}
         </p>
       </div>
 
       <div className={styles.cardsGrid}>
-        {shopItems.map((p) => (
-          <article key={p.id} className={styles.card}>
-            <div className={styles.cardImageWrap}>
-              <img className={styles.cardImage} src={p.image} alt={p.title} />
-              <span className={styles.badge}>{p.rarity}</span>
-              <span className={styles.stockPill}>{p.stock} left</span>
-            </div>
+        {isLoading
+          ? Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="rounded-[16px] w-[200px] h-[260px] skeleton"
+              />
+            ))
+          : data.map((p) => {
+              const isHover = hoverId === p.id;
+              const isImgLoaded = !!loaded[p.id];
 
-            <div className={styles.cardBody}>
-              <div className={styles.cardTop}>
-                <h2 className={styles.cardTitle}>{p.title}</h2>
-
-                <div className={styles.price}>
-                  <span className={styles.priceValue}>{p.priceEternal}</span>
-                  <span className={styles.priceUnit}>ETERNAL</span>
-                </div>
-              </div>
-
-              <p className={styles.cardSubtitle}>{p.subtitle}</p>
-
-              <div className={styles.cardActions}>
-                <button
-                  className={styles.secondaryBtn}
-                  type="button"
-                  onClick={() =>
-                    addItem({
-                      id: p.id,
-                      title: p.title,
-                      subtitle: p.subtitle,
-                      priceEternal: p.priceEternal,
-                      image: p.image,
-                      rarity: p.rarity,
-                    })
-                  }
+              return (
+                <article
+                  key={p.id}
+                  onMouseEnter={() => setHoverId(p.id)}
+                  onMouseLeave={() => setHoverId(null)}
+                  className={shopStyles.card}
                 >
-                  Add to cart
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
+                  <div className={shopStyles.image}>
+                    {!isImgLoaded && (
+                      <Skeleton
+                        className={`${shopStyles.imgSkeleton} skeleton`}
+                      />
+                    )}
+
+                    <Image
+                      src={p.image_url}
+                      alt={p.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 300px"
+                      className={shopStyles.cardImage}
+                      onLoad={() =>
+                        setLoaded((prev) => ({ ...prev, [p.id]: true }))
+                      }
+                      style={{
+                        opacity: isImgLoaded ? 1 : 0,
+                      }}
+                    />
+                  </div>
+
+                  <div className={shopStyles.cardHead}>
+                    <h2>{p.name}</h2>
+                  </div>
+
+                  <div className={shopStyles.price}>
+                    <h3>
+                      {p.price}{" "}
+                      <span className="text-gray-500 text-[16px] font-bold">
+                        SOL
+                      </span>
+                    </h3>
+                  </div>
+
+                  <div className={shopStyles.cardBody}>
+                    <span>rarity: test</span>
+
+                    <div className={shopStyles.ctaWrap}>
+                      <motion.button
+                        className={shopStyles.cta}
+                        type="button"
+                        onClick={() => addItem(p)}
+                        initial={false}
+                        animate={{
+                          opacity: isHover ? 1 : 0,
+                          y: isHover ? 0 : 6,
+                        }}
+                        transition={{ duration: 0.16, ease: "easeOut" }}
+                        style={{ pointerEvents: isHover ? "auto" : "none" }}
+                      >
+                        Connect
+                      </motion.button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
       </div>
     </div>
   );
