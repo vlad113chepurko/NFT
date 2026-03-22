@@ -3,7 +3,6 @@ import styles from "./checkout.module.css";
 import { useEffect, useMemo, useState } from "react";
 import supabase from "@/lib/supabase/client";
 import { useCartStore } from "@/zustand/use-cart-store";
-import { eternalToSol, ETERNAL_PER_SOL } from "@/lib/pricing/eternal";
 import { useRouter } from "next/navigation";
 import { vectors } from "@/vectors";
 
@@ -19,10 +18,11 @@ type OrderRow = {
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
-  const totalEternal = useCartStore((s) => s.totalEternal());
   const clearCart = useCartStore((s) => s.clear);
-
-  const amountSol = useMemo(() => eternalToSol(totalEternal), [totalEternal]);
+  const totalSol = useMemo(
+    () => items.reduce((sum, item) => sum + Number(item.price ?? 0), 0),
+    [items],
+  );
 
   const [wallet, setWallet] = useState<string | null>(null);
   const [order, setOrder] = useState<OrderRow | null>(null);
@@ -81,7 +81,7 @@ export default function CheckoutPage() {
         .insert({
           user_id: user.id,
           status: "pending",
-          amount_sol: amountSol,
+          amount_sol: totalSol,
           wallet_address: wallet,
         })
         .select("id, status, amount_sol, wallet_address, created_at, paid_at")
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
               <h1 className={styles.title}>Checkout</h1>
             </div>
             <p className={styles.subtitle}>
-              Test rate: 1 SOL = {ETERNAL_PER_SOL} ETERNAL
+              Send {totalSol} SOL from your Phantom wallet to complete the purchase.
             </p>
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
           )}
 
           <p className={styles.hint}>
-            After you send SOL from Phantom (Devnet), this page checks deposits
+            After you send SOL from Phantom, this page checks deposits
             every 10 seconds.
           </p>
         </div>

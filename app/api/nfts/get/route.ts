@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function GET() {
   try {
+    const supabase = await createSupabaseServerClient();
+
     const { data, error } = await supabase.from("nfts").select("*");
 
     console.debug("Data", data);

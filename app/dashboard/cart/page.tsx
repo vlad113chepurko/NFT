@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import styles from "./cart.module.css";
 import { useCartStore } from "@/zustand/use-cart-store";
-import { eternalToSol, ETERNAL_PER_SOL } from "@/lib/pricing/eternal";
 
 export default function Cart() {
   const router = useRouter();
@@ -10,10 +9,9 @@ export default function Cart() {
   const removeItem = useCartStore((s) => s.removeItem);
   const setQty = useCartStore((s) => s.setQty);
   const clear = useCartStore((s) => s.clear);
-  const totalEternal = useCartStore((s) => s.totalEternal());
   const totalItems = useCartStore((s) => s.totalItems());
 
-  const totalSol = eternalToSol(totalEternal);
+  const totalSol = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
   const goCheckout = () => {
     if (items.length === 0) return;
@@ -24,16 +22,22 @@ export default function Cart() {
     <div className={styles.dashboard}>
       <div className={styles.cartHeader}>
         <h1 className={styles.cartTitle}>Cart</h1>
-        <p className={styles.cartSubtitle}>
-          {totalItems} items • prices in Eternal • test rate: 1 SOL ={" "}
-          {ETERNAL_PER_SOL} ETERNAL
-        </p>
+        <div className={styles.cartSubtitle}>
+          <p>
+            You have <b>{totalItems}</b> item(s) in your cart.
+          </p>
+          <p>
+            Total SOL to pay: <b>{totalSol.toFixed(4)}</b> SOL
+          </p>
+        </div>
       </div>
 
       {items.length === 0 ? (
-        <p className={styles.cartSubtitle}>
-          Cart is empty. Go to Shop and add items.
-        </p>
+        <div className="flex flex-col items-center justify-center gap-4 py-20 w-full h-full text-center">
+          <p className={styles.cartSubtitle}>
+            Cart is empty. Go to Shop and add items.
+          </p>
+        </div>
       ) : (
         <>
           <div className={styles.cardsGrid}>
@@ -42,24 +46,20 @@ export default function Cart() {
                 <div className={styles.cardImageWrap}>
                   <img
                     className={styles.cardImage}
-                    src={p.image}
-                    alt={p.title}
+                    src={p.image_url}
+                    alt={p.name}
                   />
-                  <span className={styles.badge}>{p.rarity}</span>
                 </div>
 
                 <div className={styles.cardBody}>
                   <div className={styles.cardTop}>
-                    <h2 className={styles.cardTitle}>{p.title}</h2>
+                    <h2 className={styles.cardTitle}>{p.name}</h2>
                     <div className={styles.price}>
-                      <span className={styles.priceValue}>
-                        {p.priceEternal}
-                      </span>
-                      <span className={styles.priceUnit}>ETERNAL</span>
+                      <p className={styles.priceValue}>
+                        {p.price} <span className={styles.priceUnit}>SOL</span>
+                      </p>
                     </div>
                   </div>
-
-                  <p className={styles.cardSubtitle}>{p.subtitle}</p>
 
                   <div className={styles.cardActions}>
                     <div
@@ -98,11 +98,6 @@ export default function Cart() {
           </div>
 
           <div style={{ marginTop: 24 }}>
-            <p className={styles.cartSubtitle}>
-              Total: <b>{totalEternal}</b> ETERNAL ≈{" "}
-              <b>{totalSol.toFixed(4)}</b> SOL
-            </p>
-
             <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
               <button
                 className={styles.secondaryBtn}

@@ -27,6 +27,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           {children}
         </ReactQueryProvider>
+        <div id="modal-root"></div>
       </body>
     </html>
   );

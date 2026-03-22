@@ -1,18 +1,22 @@
 "use client";
-
+import NFTModal from "@/components/modals/nft-modal";
+import { useNftModal } from "@/zustand/use-nft-modal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/zustand/use-cart-store";
 import { useGetNfts } from "@/hooks/nfts/use-get-nfts";
 import { useHasHydrated } from "@/hooks/use-has-hydrated";
+import type { NFT } from "@/types/nft.types";
 import shopStyles from "./shop.module.css";
 import styles from "../cart/cart.module.css";
 
 const SKELETON_COUNT = 8;
 
 export default function Shop() {
+  const { isOpen, openModal } = useNftModal();
+  const [selectedNft, setSelectedNft] = useState<NFT | null>(null);
   const [hoverId, setHoverId] = useState<number | null>(null);
 
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
@@ -39,6 +43,9 @@ export default function Shop() {
 
   return (
     <div className={styles.dashboard}>
+      <AnimatePresence mode="wait">
+        {isOpen && <NFTModal addItem={addItem} data={selectedNft as NFT} />}
+      </AnimatePresence>
       <div className={styles.cartHeader}>
         <div>
           <h1 className={styles.cartTitle}>NFT Shop</h1>
@@ -110,7 +117,10 @@ export default function Shop() {
                       <motion.button
                         className={shopStyles.cta}
                         type="button"
-                        onClick={() => addItem(p)}
+                        onClick={() => {
+                          setSelectedNft(p);
+                          openModal();
+                        }}
                         initial={false}
                         animate={{
                           opacity: isHover ? 1 : 0,

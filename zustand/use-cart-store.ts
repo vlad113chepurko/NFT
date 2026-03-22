@@ -14,7 +14,6 @@ type CartState = {
   removeItem: (id: number) => void;
   setQty: (id: number, qty: number) => void;
   clear: () => void;
-  totalEternal: () => number;
   totalItems: () => number;
 };
 
@@ -36,21 +35,15 @@ export const useCartStore = create<CartState>()(
           return { items: [...state.items, { ...item, qty }] };
         });
       },
-
       removeItem: (id: number) =>
         set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
-
       setQty: (id: number, qty: number) =>
         set((state) => ({
           items: state.items
             .map((i) => (i.id === id ? { ...i, qty: Math.max(1, qty) } : i))
             .filter((i) => i.qty > 0),
         })),
-
       clear: () => set({ items: [] }),
-
-      totalEternal: () =>
-        get().items.reduce((sum, i) => sum + i.price * i.qty, 0),
       totalItems: () => get().items.reduce((sum, i) => sum + i.qty, 0),
     }),
     {

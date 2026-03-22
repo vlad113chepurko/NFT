@@ -11,18 +11,11 @@ import {
   getSplTokenBalances,
 } from "@/lib/solana/client";
 
-type TokenBalance = {
-  mint: string;
-  amount: number | null;
-  decimals: number;
-};
-
 export default function DepositPage() {
   const [loading, setLoading] = useState(true);
   const [wallet, setWallet] = useState<string | null>(null);
 
   const [solBalance, setSolBalance] = useState<number | null>(null);
-  const [tokens, setTokens] = useState<TokenBalance[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const [lastDeposits, setLastDeposits] = useState<string[]>([]);
@@ -70,12 +63,11 @@ export default function DepositPage() {
     if (!wallet) return;
     setRefreshing(true);
     try {
-      const [sol, tokenBalances] = await Promise.all([
+      const [sol] = await Promise.all([
         getSolBalance(wallet),
         getSplTokenBalances(wallet),
       ]);
       setSolBalance(sol);
-      setTokens(tokenBalances);
     } catch (e) {
       console.error("refreshBalances error:", e);
     } finally {
@@ -230,29 +222,6 @@ export default function DepositPage() {
             <p className="font-mono text-lg text-purple-400 mt-1">
               {solBalance === null ? "-" : solBalance.toFixed(6)}
             </p>
-          </div>
-
-          <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3">
-            <p className="text-xs text-gray-400 mb-2">Token balances (SPL)</p>
-            {tokens.length === 0 ? (
-              <p className="text-sm text-gray-300">No tokens found.</p>
-            ) : (
-              <ul className="space-y-2">
-                {tokens.map((t) => (
-                  <li
-                    key={t.mint}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="font-mono text-xs text-gray-300">
-                      {t.mint.slice(0, 4)}…{t.mint.slice(-4)}
-                    </span>
-                    <span className="font-mono text-sm text-purple-200">
-                      {t.amount}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <div className="w-full bg-black/40 border border-white/10 rounded-lg p-3">

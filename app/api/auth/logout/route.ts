@@ -1,19 +1,23 @@
 import { NextResponse } from "next/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
-    const response = NextResponse.json({ success: true });
+    const supabase = await createSupabaseServerClient();
 
-    response.cookies.set("access_token", "", { maxAge: 0 });
-    response.cookies.set("refresh_token", "", { maxAge: 0 });
-    response.cookies.set("session", "", { maxAge: 0 });
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 },
+      );
+    }
 
-    return response;
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({
-      status: 500,
-      error: error.message,
-      success: false,
-    });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 },
+    );
   }
 }
