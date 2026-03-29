@@ -9,22 +9,10 @@ export default function SideBarFooter() {
   function handleLogout() {
     try {
       setLoading(true);
-      fetch("/api/auth/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error("Logout failed");
-          }
-          router.push("/auth/login");
-        })
-        .catch((error) => {
-          console.error("Logout error:", error);
-        });
-    } catch (error) {
-      setLoading(false);
-      console.error("Logout error:", error);
+      localStorage.removeItem("user");
+      router.push("/");
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }

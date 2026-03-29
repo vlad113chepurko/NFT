@@ -1,41 +1,52 @@
 "use client";
+import { Spinner } from "@/components/ui/spinner";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { IUser } from "@/types/user.types";
 
 import useGetUser from "@/hooks/use-get-user";
-import { Spinner } from "@/components/ui/spinner";
-import { motion, type Variants } from "framer-motion";
-import { useEffect, useState } from "react";
+import supabase from "@/lib/supabase/client";
 import styles from "./styles/dashboard.module.css";
 
-interface UserRow {
+type Order = {
   id: string;
-  name: string | null;
-  email: string | null;
-  wallet: string | null;
-  avatar: string | null;
-}
-
-const ease = [0.22, 1, 0.36, 1] as const;
-
-const cardIn: Variants = {
-  hidden: { opacity: 0, y: 18, scale: 0.98, filter: "blur(8px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease },
-  },
+  amount_sol: number;
+  status: string;
+  tx_hash: string | null;
+  paid_at: string | null;
 };
 
 export default function Dashboard() {
-  const [userData, setUserData] = useState<UserRow | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
   const fetchUserData = useGetUser({ setUserData, setLoading });
 
   useEffect(() => {
     fetchUserData();
-
   }, []);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      if (!userData?.wallet_address) return;
+
+      setOrdersLoading(true);
+
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("wallet_address", userData.wallet_address)
+        .order("created_at", { ascending: false });
+
+      setOrders(data || []);
+      setOrdersLoading(false);
+    };
+
+    loadOrders();
+  }, [userData]);
 
   if (loading || !userData) {
     return (
@@ -49,7 +60,6 @@ export default function Dashboard() {
     <div className={styles.dashboard}>
       <motion.section
         className={styles.profileCard}
-        variants={cardIn}
         initial="hidden"
         animate="show"
       >
@@ -57,17 +67,50 @@ export default function Dashboard() {
           <img
             src={userData.avatar ?? "https://i.pravatar.cc/150?img=12"}
             className={styles.avatar}
-            alt="avatar"
           />
-          <h1 className={styles.name}>{userData.name || "Anonymous"}</h1>
-          <p className={styles.email}>{userData.email ?? "—"}</p>
+
+          <h1 className={styles.name}>{userData.username || "Anon"}</h1>
 
           <div className={styles.walletInfo}>
             <p className={styles.walletLabel}>Wallet</p>
-            <p className={styles.walletValue}>{userData.wallet ?? "-"}</p>
+            <p className={styles.walletValue}>{userData.wallet_address}</p>
           </div>
         </div>
       </motion.section>
+
+      <section className={styles.orders}>
+        <h2 className={styles.ordersTitle}>Purchases</h2>
+
+        {ordersLoading ? (
+          <Spinner className="size-6" />
+        ) : orders.length === 0 ? (
+          <p className={styles.empty}>No purchases yet</p>
+        ) : (
+          <div className={styles.ordersList}>
+            {orders.map((order) => (
+              <div key={order.id} className={styles.orderCard}>
+                <div>
+                  <p className={styles.orderAmount}>
+                    {order.amount_sol.toFixed(4)} SOL
+                  </p>
+
+                  <p className={styles.orderStatus}>{order.status}</p>
+                </div>
+
+                {order.tx_hash && (
+                  <a
+                    href={`https://explorer.solana.com/tx/${order.tx_hash}?cluster=devnet`}
+                    target="_blank"
+                    className={styles.txLink}
+                  >
+                    View tx
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

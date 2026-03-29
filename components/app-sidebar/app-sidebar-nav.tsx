@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { vectors } from "@/vectors";
 
 function DashboardSidebarNavigation() {
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
 
   const paths = [
@@ -43,7 +45,14 @@ function DashboardSidebarNavigation() {
       <ul>
         {isLoading
           ? paths.map((path) => (
-              <li key={path.href} className="side-bar__li">
+              <li
+                key={path.href}
+                className={
+                  pathname === path.href
+                    ? "side-bar__li active"
+                    : "side-bar__li"
+                }
+              >
                 <Skeleton className="w-full h-[50px] rounded-[5px] skeleton" />
               </li>
             ))

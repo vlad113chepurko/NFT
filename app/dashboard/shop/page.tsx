@@ -1,24 +1,24 @@
 "use client";
+
 import NFTModal from "@/components/modals/nft-modal";
 import { useNftModal } from "@/zustand/use-nft-modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "motion/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/zustand/use-cart-store";
 import { useGetNfts } from "@/hooks/nfts/use-get-nfts";
 import { useHasHydrated } from "@/hooks/use-has-hydrated";
 import type { NFT } from "@/types/nft.types";
-import shopStyles from "./shop.module.css";
-import styles from "../cart/cart.module.css";
+
+import styles from "./shop.module.css";
+import { Spinner } from "@/components/ui/spinner";
 
 const SKELETON_COUNT = 8;
 
 export default function Shop() {
   const { isOpen, openModal } = useNftModal();
-  const [selectedNft, setSelectedNft] = useState<NFT | null>(null);
-  const [hoverId, setHoverId] = useState<number | null>(null);
-
+  const [selected, setSelected] = useState<NFT | null>(null);
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   const { data = [], isLoading, error } = useGetNfts();
@@ -27,109 +27,69 @@ export default function Shop() {
   const addItem = useCartStore((s) => s.addItem);
   const totalItems = useCartStore((s) => s.totalItems());
 
-  useMemo(() => {
-    const ids = new Set(data.map((x) => x.id));
-    setLoaded((prev) => {
-      const next: Record<number, boolean> = {};
-      for (const k of Object.keys(prev)) {
-        const id = Number(k);
-        if (ids.has(id)) next[id] = prev[id];
-      }
-      return next;
-    });
-  }, [data.length]);
-
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className={styles.dashboard}>
-      <AnimatePresence mode="wait">
-        {isOpen && <NFTModal addItem={addItem} data={selectedNft as NFT} />}
+    <div className={styles.page}>
+      <AnimatePresence>
+        {isOpen && <NFTModal addItem={addItem} data={selected as NFT} />}
       </AnimatePresence>
-      <div className={styles.cartHeader}>
+
+      {/* HEADER */}
+      <div className={styles.header}>
         <div>
-          <h1 className={styles.cartTitle}>NFT Shop</h1>
-          <p className={styles.cartSubtitle}>NFT items - prices in SOL</p>
+          <h1 className={styles.title}>NFT Shop</h1>
+          <p className={styles.subtitle}>Items priced in SOL</p>
         </div>
-        <p className={styles.cartSubtitle}>
-          In cart: {hydrated ? totalItems : 0}
-        </p>
+
+        <p className={styles.subtitle}>In cart: {hydrated ? totalItems : 0}</p>
       </div>
 
-      <div className={styles.cardsGrid}>
+      <div className={styles.grid}>
         {isLoading
           ? Array.from({ length: SKELETON_COUNT }).map((_, i) => (
               <Skeleton
                 key={i}
-                className="rounded-[16px] w-[200px] h-[260px] skeleton"
+                className="w-[200px] h-[260px] rounded-[14px]"
               />
             ))
-          : data.map((p) => {
-              const isHover = hoverId === p.id;
-              const isImgLoaded = !!loaded[p.id];
+          : data.map((item) => {
+              const isImgLoaded = !!loaded[item.id];
 
               return (
-                <article
-                  key={p.id}
-                  onMouseEnter={() => setHoverId(p.id)}
-                  onMouseLeave={() => setHoverId(null)}
-                  className={shopStyles.card}
-                >
-                  <div className={shopStyles.image}>
+                <article key={item.id} className={styles.card}>
+                  <div className={styles.image}>
                     {!isImgLoaded && (
-                      <Skeleton
-                        className={`${shopStyles.imgSkeleton} skeleton`}
-                      />
+                      <div className={styles.loaderWrap}>
+                        <Spinner className="size-8" />
+                      </div>
                     )}
 
                     <Image
-                      src={p.image_url}
-                      alt={p.name}
+                      src={item.image_url}
+                      alt={item.name}
                       fill
-                      sizes="(max-width: 768px) 100vw, 300px"
-                      className={shopStyles.cardImage}
+                      className={styles.cardImage}
                       onLoad={() =>
-                        setLoaded((prev) => ({ ...prev, [p.id]: true }))
+                        setLoaded((p) => ({ ...p, [item.id]: true }))
                       }
-                      style={{
-                        opacity: isImgLoaded ? 1 : 0,
-                      }}
+                      style={{ opacity: isImgLoaded ? 1 : 0 }}
                     />
                   </div>
 
-                  <div className={shopStyles.cardHead}>
-                    <h2>{p.name}</h2>
-                  </div>
+                  <div className={styles.body}>
+                    <div className={styles.name}>{item.name}</div>
+                    <div className={styles.price}>{item.price} SOL</div>
 
-                  <div className={shopStyles.price}>
-                    <h3>
-                      {p.price}{" "}
-                      <span className="text-gray-500 text-[16px] font-bold">
-                        SOL
-                      </span>
-                    </h3>
-                  </div>
-
-                  <div className={shopStyles.cardBody}>
-                    <span>rarity: test</span>
-
-                    <div className={shopStyles.ctaWrap}>
+                    <div className={styles.ctaWrap}>
                       <motion.button
-                        className={shopStyles.cta}
-                        type="button"
+                        className={styles.cta}
                         onClick={() => {
-                          setSelectedNft(p);
+                          setSelected(item);
                           openModal();
                         }}
-                        initial={false}
-                        animate={{
-                          opacity: isHover ? 1 : 0,
-                          y: isHover ? 0 : 6,
-                        }}
-                        transition={{ duration: 0.16, ease: "easeOut" }}
-                        style={{ pointerEvents: isHover ? "auto" : "none" }}
                       >
-                        Connect
+                        Buy
                       </motion.button>
                     </div>
                   </div>

@@ -5,6 +5,7 @@ import Shop from "./Shop";
 import Logout from "./Logout";
 import Deposit from "./Deposit";
 import Back from "./Back";
+import Edit from "./Edit";
 
 export const vectors = {
   Close,
@@ -14,4 +15,5 @@ export const vectors = {
   DashboardVector,
   Shop,
   Back,
+  Edit,
 };

@@ -1,207 +1,149 @@
-.dashboard {
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px;
+  color: white;
+}
+
+.header {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  padding: 28px 20px 40px;
-  color: var(--foreground, var(--text));
-  background: var(--background);
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
 }
 
-.cartHeader {
-  width: 100%;
-  margin: 0 auto 18px;
-  padding: 6px 2px;
-}
-
-.cartTitle {
-  margin: 0;
+.title {
   font-size: 34px;
-  letter-spacing: 0.2px;
-  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-.cartSubtitle {
+.meta {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  margin: 6px 0 0;
-  opacity: 0.75;
-  font-size: 14px;
-  color: rgba(var(--text-rgb), 0.75);
+  gap: 5px;
+  font-size: 11px;
+
+  h3 {
+    font-size: 21px;
+    font-weight: 700;
+  }
 }
 
-.cardsGrid {
+.empty {
+  height: 100vh;
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 20px;
-  width: 100%;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 }
 
 .card {
-  border-radius: 12px;
-  max-width: 400px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   overflow: hidden;
-  background: var(--card);
-  border: 1px solid var(--border-light);
+  transition: 0.2s ease;
 }
 
-.cardImageWrap {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  background: var(--background-blur);
-}
-
-.cardImage {
+.image {
   width: 100%;
-  height: 100%;
+  height: 160px;
   object-fit: cover;
-  display: block;
-  filter: saturate(1.02) contrast(1.02);
 }
 
-.savedPill {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  letter-spacing: 0.2px;
-
-  background: var(--background);
-  border: 1px solid rgba(129, 201, 149, 0.35);
-  color: var(--green);
-
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(6px);
+.body {
+  padding: 12px;
 }
 
-.cardBody {
-  padding: 14px 14px 16px;
-}
-
-.cardTop {
+.top {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  margin-bottom: 10px;
 }
 
-.cardTitle {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.15;
-  color: var(--text);
+.name {
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .price {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  text-align: right;
-  min-width: 110px;
-}
-
-.priceValue {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 5px;
-  font-weight: 800;
-  font-size: 1.2rem;
-}
-
-.priceUnit {
-  font-size: 0.9rem;
-  color: var(--text-grey);
-}
-
-.cardActions {
-  margin-top: 14px;
-  display: flex;
-  gap: 10px;
-}
-
-.primaryBtn,
-.secondaryBtn {
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 700;
   font-size: 13px;
+  opacity: 0.7;
+}
 
-  border: 1px solid transparent;
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qty {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.qty button {
+  background: none;
+  border: none;
+  color: white;
   cursor: pointer;
-  flex: 1;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .primaryBtn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
   background: var(--accent);
-  color: var(--text-button);
-}
-
-.primaryBtn:hover {
-  transform: translateY(-1px);
-  background: var(--accent-hover);
-}
-
-.primaryBtn:disabled {
-  background: var(--accent-disabled);
-  cursor: not-allowed;
-  opacity: 0.9;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .secondaryBtn {
-  background: var(--background-button);
-  border-color: var(--border-light);
-  color: rgba(var(--text-rgb), 0.9);
-}
-
-.secondaryBtn:hover {
-  transform: translateY(-1px);
-  background: var(--hover-background);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.orderBox {
-  margin-top: 28px;
-  padding: 18px;
-
-  border-radius: 18px;
-  background: var(--gradient);
-
-  border: 1px solid var(--border-light);
-
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
-  backdrop-filter: blur(10px);
-}
-
-.orderRow {
-  margin-top: 8px;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.walletBox {
-  margin-top: 10px;
-  padding: 10px;
-
-  border-radius: 10px;
-  background: var(--background-blur);
-  border: 1px solid var(--border-light);
-
-  font-size: 13px;
-  word-break: break-all;
-}
-
-.orderActions {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 6px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
-
-
