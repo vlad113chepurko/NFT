@@ -99,8 +99,8 @@ export default function DepositPage() {
           return;
         }
 
-        for (const s of sigs) {
-          const sig = s.signature;
+        for (const { signature: sig } of sigs) {
+          if (cancelled) return;
 
           if (seenSigs.current.has(sig)) continue;
           seenSigs.current.add(sig);
@@ -112,9 +112,8 @@ export default function DepositPage() {
 
           if (!incoming) continue;
 
-          const { error: insertError } = await supabase
-            .from("deposits")
-            .insert({
+          const { error } = await supabase.from("deposits").upsert(
+            {
               user_id: user.id,
               wallet_address: wallet,
               signature: sig,
@@ -123,19 +122,22 @@ export default function DepositPage() {
               block_time: incoming.blockTime
                 ? new Date(incoming.blockTime * 1000).toISOString()
                 : null,
+            },
+            { onConflict: "signature" },
+          );
+
+          if (error) {
+            console.error("deposit upsert error:", {
+              message: error.message,
+              code: error.code,
+              details: error.details,
             });
-
-          if (insertError) {
-            if (!String(insertError.message).includes("duplicate")) {
-              console.error("deposit insert error:", insertError);
-            }
-          } else {
-            if (cancelled) return;
-
-            setLastDeposits((prev) => [sig, ...prev].slice(0, 10));
-
-            await refreshBalances();
+            continue;
           }
+
+          setLastDeposits((prev) => [sig, ...prev].slice(0, 10));
+
+          await refreshBalances();
         }
       } catch (e) {
         console.error("deposit poll error:", e);
@@ -150,7 +152,6 @@ export default function DepositPage() {
       window.clearInterval(id);
     };
   }, [wallet, user]);
-
   const copyAddress = async () => {
     const timer = setTimeout(() => {
       setIsSaved(false);
@@ -158,6 +159,7 @@ export default function DepositPage() {
     setIsSaved(true);
     if (!wallet) return;
     await navigator.clipboard.writeText(wallet);
+    return () => clearTimeout(timer);
   };
 
   if (loading) {

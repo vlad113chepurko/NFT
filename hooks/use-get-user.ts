@@ -1,5 +1,5 @@
 import { IUser } from "@/types/user.types";
-
+import supabase from "@/lib/supabase/client";
 interface Props {
   setUserData: React.Dispatch<React.SetStateAction<IUser | null>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -7,26 +7,25 @@ interface Props {
 
 function useGetUser({ setUserData, setLoading }: Props) {
   const fetchUserData = async () => {
-    try {
-      setLoading(true);
+    const cached = localStorage.getItem("user");
 
-      const stored = localStorage.getItem("user");
-
-      if (!stored) {
-        setUserData(null);
-        return;
-      }
-
-      const user = JSON.parse(stored);
-      setUserData(user);
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      setUserData(null);
-    } finally {
-      setLoading(false);
+    if (cached) {
+      setUserData(JSON.parse(cached));
     }
-  };
 
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", JSON.parse(cached || "{}")?.id)
+      .single();
+
+    if (data) {
+      setUserData(data);
+      localStorage.setItem("user", JSON.stringify(data));
+    }
+
+    setLoading(false);
+  };
   return fetchUserData;
 }
 export default useGetUser;

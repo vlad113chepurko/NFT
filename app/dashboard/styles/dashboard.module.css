@@ -3,11 +3,10 @@
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  
+
   height: 100dvh;
 }
 
-/* BACKGROUND + LAYOUT */
 .dashboard {
   position: relative;
   overflow: hidden;
@@ -21,11 +20,6 @@
   height: 100%;
 
   color: #e5e7eb;
-
-  background:
-    radial-gradient(circle at top, rgba(168, 85, 247, 0.12), transparent 45%),
-    radial-gradient(circle at bottom, rgba(79, 124, 255, 0.1), transparent 40%),
-    #050505;
 }
 
 /* PROFILE CARD */
@@ -34,7 +28,7 @@
   z-index: 1;
 
   width: 100%;
-  max-width: 460px;
+  max-width: 600px;
   padding: 18px;
 
   border-radius: 20px;
@@ -152,7 +146,7 @@
 .orders {
   margin-top: 26px;
   width: 100%;
-  max-width: 460px;
+  max-width: 600px;
 }
 
 .ordersTitle {
@@ -287,4 +281,221 @@
   background-color: #101010;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
+}
+
+.orderItems {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.itemCard {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.itemImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.itemPrice {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.itemTraits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.trait {
+  font-size: 10px;
+  opacity: 0.6;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.editOverlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 100;
+}
+
+.editBox {
+  position: fixed;
+  z-index: 101;
+  width: 100%;
+  max-width: 420px;
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: #e5e7eb;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+.input:focus {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+.editBox input[type="file"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover {
+    background: rgba(168, 85, 247, 0.15);
+  }
+}
+
+.editActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.editActions button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+
+  padding: 10px 12px;
+
+  border-radius: 12px;
+
+  border: none;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.editActions button:first-child {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.editActions button:first-child:hover {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+.editActions button:last-child {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.editActions button:last-child:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.editBtn {
+  margin-top: 10px;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+
+  color: #a855f7;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.editBtn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  transform: translateY(-1px);
+}
+
+.profileCard {
+  transition: 0.3s;
+}
+
+.dashboard:has(.editOverlay) .profileCard {
+  filter: blur(3px);
+  transform: scale(0.98);
 }
